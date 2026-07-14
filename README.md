@@ -1,22 +1,31 @@
-# Controla — panel de inventario
+# Axinop — panel de inventario
 
-Panel React listo para Vercel y Firestore. Cada producto se almacena en `products` y cada venta en `sales`; al registrar una venta se actualiza el stock mediante una transacción atómica.
+Aplicación React/Vite lista para desplegar en Vercel. Los productos se guardan en la colección `products` y las ventas en `sales` de Cloud Firestore.
 
-## Puesta en marcha
+## Desplegar en Vercel
 
-1. Crea un proyecto de Firebase, habilita **Cloud Firestore** y copia la configuración web en `.env` usando `.env.example`.
-2. Ejecuta `npm install` y `npm run dev`.
-3. Sube este directorio a GitHub e impórtalo en Vercel. Añade las mismas variables `VITE_FIREBASE_*` en **Project Settings → Environment Variables**.
+1. Sube esta carpeta a un repositorio de GitHub (sin `.env` ni `node_modules`).
+2. En [Vercel](https://vercel.com/new), selecciona el repositorio e importa el proyecto.
+3. En **Environment Variables**, agrega las variables de `.env.example` para Production, Preview y Development:
 
-Para el primer uso de Firestore durante desarrollo puedes utilizar estas reglas (antes de publicar, activa Authentication y restrínge las reglas):
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
 
-```js
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} { allow read, write: if true; }
-  }
-}
+4. Pulsa **Deploy**. Vercel usará `npm run build` y publicará la carpeta `dist` automáticamente.
+
+## Firebase
+
+En Firebase habilita **Cloud Firestore**. La configuración se toma únicamente desde las variables de entorno de Vercel o desde un `.env` local basado en `.env.example`.
+
+Antes de publicar, activa Firebase Authentication y aplica reglas de Firestore que permitan leer y escribir solo a usuarios autorizados. No publiques reglas abiertas como `allow read, write: if true`.
+
+## Desarrollo local
+
+```bash
+npm install
+npm run dev
 ```
-
-Coloca la imagen de la tienda en `src/assets/logo-placeholder.svg` y sustitúyela cuando tengas tu logo.

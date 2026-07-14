@@ -11,6 +11,7 @@ dist/
 # Registros, caché y archivos del sistema
 *.log
 .vite/
+.vercel/
 .DS_Store
 Thumbs.db
 
