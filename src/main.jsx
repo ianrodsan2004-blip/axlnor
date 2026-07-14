@@ -10,6 +10,7 @@ import './contrast.css';
 
 let saleCrud = {};
 let investmentSales = [];
+let dashboardActions = {};
 
 const money = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
 const blank = { name:'', category:'', sku:'', stock:0, cost:0, price:0, imageUrl:'', sourceUrl:'' };
@@ -17,6 +18,7 @@ const seed = [{id:'A00001',name:'Multicontactos USB',category:'USB',sku:'A00001'
 function App(){
  const [products,setProducts]=useState([]),[sales,setSales]=useState([]),[section,setSection]=useState('Resumen'),[search,setSearch]=useState(''),[editing,setEditing]=useState(null),[detail,setDetail]=useState(null),[productOpen,setProductOpen]=useState(false),[saleOpen,setSaleOpen]=useState(false),[exportOpen,setExportOpen]=useState(false);
  investmentSales=sales;
+ dashboardActions={openSale:()=>setSaleOpen(true)};
  useEffect(()=>{if(!db){setProducts(seed);return;}const p=onSnapshot(query(collection(db,'products'),orderBy('createdAt','desc')),s=>setProducts(s.docs.map(d=>({id:d.id,...d.data()}))));const v=onSnapshot(query(collection(db,'sales'),orderBy('createdAt','desc')),s=>setSales(s.docs.map(d=>({id:d.id,...d.data()}))));return()=>{p();v();};},[]);
  const metrics=useMemo(()=>{const availableCost=products.reduce((n,p)=>n+(+p.stock||0)*(+p.cost||0),0),soldCost=sales.reduce((n,s)=>n+(+s.costTotal||0),0),investment=availableCost+soldCost,revenue=sales.reduce((n,s)=>n+(+s.total||0),0),profit=revenue-investment;return{units:products.reduce((n,p)=>n+(+p.stock||0),0),investment,revenue,profit,margin:revenue?profit/revenue*100:0};},[products,sales]);
  const removeSale=async sale=>{if(!confirm(`Eliminar la venta de ${sale.productName}?`))return;const qty=+sale.quantity||0;if(!db){setProducts(xs=>xs.map(p=>p.id===sale.productId?{...p,stock:+p.stock+qty}:p));setSales(xs=>xs.filter(s=>s.id!==sale.id));return;}await runTransaction(db,async t=>{const pr=doc(db,'products',sale.productId),sr=doc(db,'sales',sale.id),snap=await t.get(pr);if(snap.exists())t.update(pr,{stock:(+snap.data().stock||0)+qty,updatedAt:serverTimestamp()});t.delete(sr);});};
