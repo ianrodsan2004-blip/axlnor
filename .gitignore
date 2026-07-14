@@ -1,0 +1,19 @@
+# Dependencias y compilados
+node_modules/
+dist/
+
+# Variables de entorno y claves de Firebase
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Registros, caché y archivos del sistema
+*.log
+.vite/
+.DS_Store
+Thumbs.db
+
+# Configuración local del editor
+.vscode/
+.idea/
